@@ -151,3 +151,81 @@ func AcceptationDifferee(agtA []*Agent, agtB []*Agent, a Mariages){
   }
 }
 
+func cycle_echange(proposant map[AgentID]AgentID, disposant map[AgentID]AgentID) map[AgentID]AgentID { //map[AgentID]AgentID
+  cycle := make(map[AgentID]AgentID)
+  for disp, prop := range(disposant){
+    if _, ok := proposant[prop] ; ok {
+      cycle[prop] = disp
+  }
+
+}
+return cycle
+}
+
+func TopTradingCycles (agtA []*Agent, agtB []*Agent, a Mariages){
+  // sortie de boucle : len(a) != len(agtA) ça change pas.
+  engages := make(map[AgentID]bool)
+  engages_prop := make(map[AgentID]bool)
+  for len(a) != len(agtA){
+    fmt.Println(a)
+    //cycle := make(map[AgentID]AgentID)
+    pointeurs_prop := make(map[AgentID]AgentID)
+    pointeurs_disp := make(map[AgentID]AgentID)
+    dispos_pointes := make(map[AgentID]bool)
+    var pointeur_prop AgentID
+    var pointeur_disp AgentID
+    for _,proposant := range agtA{
+      // on passe si proposant deja dans l'appariement
+      if _, ok := engages[proposant.ID] ; ok {
+          continue
+        }
+      // Pointeur // possibilité de reduire ça correctement
+      has_pointeur := true
+      for has_pointeur{
+        pointeur_prop = GetAgentById(proposant.Prefs[proposant.iterateur], agtB).ID
+        // si le dispo est deja engage, on ne peut pas lui proposer.
+        if _, ok := engages[pointeur_prop]; !ok {
+          has_pointeur = false
+        }else{
+          proposant.iteration()
+        }
+      }
+      pointeurs_prop[proposant.ID] = pointeur_prop
+      dispos_pointes[pointeur_prop] = true
+    }
+
+    for _,disposant := range agtB{
+        // pour ameliorer la complexite il faudrait faire comme pour les proposants et verifier l'appartenance au map.
+        if _, ok := engages[disposant.ID] ; ok {
+            continue
+        }
+        if  _, ok := dispos_pointes[disposant.ID]; ok{
+          has_pointeur := true
+
+          for has_pointeur{
+            pointeur_disp = GetAgentById(disposant.Prefs[disposant.iterateur], agtA).ID
+            if _, ok := engages_prop[pointeur_disp]; !ok {
+              has_pointeur = false
+            }else{
+              disposant.iteration()
+            }
+          }
+          pointeurs_disp[disposant.ID] = pointeur_disp
+        }
+    }
+    // on identifie un/des cycles d'echange, boucle sur pointeurs
+    fmt.Println("pointeurs_prop", pointeurs_prop)
+    fmt.Println("pointeurs_disp", pointeurs_disp)
+    cycle := cycle_echange(pointeurs_prop, pointeurs_disp)
+
+    for prop, disp := range(cycle){
+      a[disp] = prop
+      engages[GetAgentById(disp, agtB).ID] = true
+      engages[GetAgentById(prop, agtA).ID] = true
+      engages_prop[GetAgentById(prop, agtA).ID] = true
+    }
+    //fmt.Println("ok", cycle)
+    //
+   }
+  }
+
