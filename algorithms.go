@@ -16,6 +16,7 @@ func stabilizeMariage(proposant Agent, disposant Agent, proposant2 Agent, dispos
   return proposant.ID, disposant.ID, proposant2.ID, disposant2.ID //si le mariage est stage on renvoie les AgentID dans le bon ordre.
 }
 
+
 func DynamiqueLibreAlgorithm(proposants []Agent, disposants []Agent) Mariages{
   mariages := make(Mariages)  //on crée les mariages
 
@@ -45,6 +46,75 @@ func DynamiqueLibreAlgorithm(proposants []Agent, disposants []Agent) Mariages{
     }
   }
   return mariages
+}
+
+/*
+ *	Algorithme de AcceptationImmediate
+ *
+ *  Renvoie une appariement parfait.
+ */
+
+ func AcceptationImmediateAlgorithm(proposants []Agent, disposants []Agent) Mariages {
+ 	mariages := make(Mariages)  //on crée les mariages
+	_p := proposants	//on copie les tableaux
+	_d := disposants
+	for len(_p) > 0{ //tant qu'il reste des proposants
+		propositions := make(Propositions)	//on remet les propositions à 0 à chaque tour
+		for i := 0; i < len(_p); i++{	//les proposants proposent
+			propositions[_p[i].Prefs[0]] = append(propositions[_p[i].Prefs[0]], _p[i].ID)	//le proposant envoie une proposition à son disposant préféré
+		}
+		for i := 0; i < len(_d); i++{ //les disposants disposent
+			disposantID := _d[i].ID
+			if len(propositions[disposantID]) > 0{	//si le disposant a reçu des propositions
+				preferedProposant := propositions[disposantID][0]
+				for j := 1; j < len(propositions[disposantID]); j++{
+					if _d[i].Prefers(GetAgent(proposants, propositions[disposantID][j]), GetAgent(proposants, preferedProposant)){
+						preferedProposant = propositions[disposantID][j]
+					}
+				}
+				mariages[preferedProposant] = disposantID	//on crée le mariage
+				_p, _d = deleteAgents(preferedProposant, disposantID, _p, _d)	//on met à jour //les agents sont déjà mariés, ils ne seront plus disponibles
+			}
+		}
+	}
+ 	return mariages	//on retourne tous les mariages
+ }
+
+/*	Fonction deleteAgents
+ *
+ * Permet de supprimer deux agents des groupes d'agents diponibles pour se marier.
+ */
+ func deleteAgents(proposantID AgentID, disposantID AgentID, proposants []Agent, disposants []Agent) (_p []Agent, _d []Agent){
+	 for j := 0; j < len(proposants); j++{
+		 if proposantID == proposants[j].ID{
+			 proposants = RemoveIndex(proposants, j)
+		 }
+	 }
+	 for j := 0; j < len(disposants); j++{
+		 if disposantID == disposants[j].ID{
+			 disposants = RemoveIndex(disposants, j)
+		 }
+	 }
+	 for j := 0; j < len(proposants); j++{
+		 for i, v := range proposants[j].Prefs {	//on supprime le disposant des préférences des proposants
+			 if v == disposantID {
+		     proposants[j].Prefs = append(proposants[j].Prefs[:i], proposants[j].Prefs[i+1:]...)
+		     break
+		   }
+		 }
+
+	 	 for i, v := range disposants[j].Prefs {	//on supprime le proposant des préférences des disposants
+			 if v == proposantID {
+		     disposants[j].Prefs = append(disposants[j].Prefs[:i], disposants[j].Prefs[i+1:]...)
+		     break
+		   }
+		 }
+	 }
+	 return proposants, disposants
+ }
+
+func RemoveIndex(s []Agent, index int) []Agent {
+	return append(s[:index], s[index+1:]...)
 }
 
 
