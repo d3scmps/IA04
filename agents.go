@@ -118,3 +118,22 @@ func GenerateAgents(prenoms []Prenom, n int) (proposants []Agent, disposants []A
 
 	return proposants, disposants
 }
+
+func GenerateProblematicAgentsForAcceptationImmediateAlgorithm(prenoms []Prenom) (proposants []Agent, disposants []Agent){
+	males := ShufflePrenoms(GetAllMales(prenoms), 3)	//prénoms masculins
+	females := ShufflePrenoms(GetAllFemales(prenoms), 3)	//prénoms féminins
+
+	proposants = make([]Agent, 0, 3)
+	disposants = make([]Agent, 0, 3)
+
+	proposants = append(proposants, NewAgent("p0", males[0].prenom, []AgentID{"d0", "d1", "d2"}))
+	proposants = append(proposants, NewAgent("p1", males[1].prenom, []AgentID{"d0", "d1", "d2"}))
+	proposants = append(proposants, NewAgent("p2", males[2].prenom, []AgentID{"d1", "d0", "d2"}))
+
+	disposants = append(disposants, NewAgent("d0", females[0].prenom, []AgentID{"p0", "p1", "p2"}))
+	disposants = append(disposants, NewAgent("d1", females[1].prenom, []AgentID{"p1", "p0", "p2"}))
+	disposants = append(disposants, NewAgent("d2", females[2].prenom, []AgentID{"p0", "p2", "p1"}))
+
+
+	return proposants, disposants
+}
