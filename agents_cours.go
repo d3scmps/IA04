@@ -15,6 +15,28 @@ type Agent struct {
 	iterateur int
 }
 
+func TableauAgTOtableauPointeursAg(tab []Agent) []*Agent {
+  taille := len(tab)
+  tabbis := make([]*Agent, taille)
+  for i, _ := range(tab){
+    tabbis[i] = &tab[i]
+  }
+  return tabbis
+}
+
+func GetAgentById(id AgentID, tab []*Agent)  (x *Agent){
+  for _,agent := range(tab){
+    if agent.ID == id{
+      return agent
+    }
+  }
+  return nil
+}
+
+func (agent *Agent) iteration() {
+  agent.iterateur ++
+}
+
 func NewAgent(id AgentID, name string, prefs []AgentID) Agent {
 	return Agent{
 		id,
