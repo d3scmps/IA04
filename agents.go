@@ -106,11 +106,13 @@ func GenerateAgents(prenoms []Prenom, n int) (proposants []Agent, disposants []A
 
 	for i := 0; i < n; i++ {	//generating agent
 		prefsProposant := RandomPrefs(prefsProposants)
-		proposant := NewAgent(prefsProposants[i], males[i].prenom, prefsProposant)
+		//proposant := NewAgent(prefsProposants[i], males[i].prenom, prefsProposant)
+		proposant := NewAgent(prefsDisposants[i], males[i].prenom, prefsProposant)
 		proposants = append(proposants, proposant)
 
 		prefsDisposant := RandomPrefs(prefsDisposants)
-		disposant := NewAgent(prefsDisposants[i], females[i].prenom, prefsDisposant)
+		//disposant := NewAgent(prefsDisposants[i], females[i].prenom, prefsDisposant)
+		disposant := NewAgent(prefsProposants[i], females[i].prenom, prefsDisposant)
 		disposants = append(disposants, disposant)
 	}
 
