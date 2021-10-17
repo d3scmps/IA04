@@ -138,7 +138,7 @@ func AcceptationImmediate(agtA []Agent, agtB []Agent, a map[AgentID]AgentID){
 
 // Gale & Shapley
 
-func AcceptationDifferee(agtA []*Agent, agtB []Agent, a map[AgentID]AgentID){
+func AcceptationDifferee(agtA []*Agent, agtB []*Agent, a Mariages){
   engages := make(map[AgentID]bool)
   for len(a) != len(agtA){
     for _,proposant := range agtA{ // recreation des agents a chaque boucle
@@ -155,9 +155,10 @@ func AcceptationDifferee(agtA []*Agent, agtB []Agent, a map[AgentID]AgentID){
         engages[proposant.ID] = true
       }else{
         // sinon on compare, si il y a preference on change l'appariement et on remet l'ancien prop dans les celibataires.
-        if GetAgentById(preference, agtB).Prefers(*proposant,*GetAgentByIdbis(a[preference],agtA)){
-            delete(engages,GetAgentByIdbis(a[preference],agtA).ID)
+        if GetAgentById(preference, agtB).Prefers(*proposant,*GetAgentById(a[preference],agtA)){
+            delete(engages,GetAgentById(a[preference],agtA).ID)
             a[preference] = proposant.ID
+            engages[proposant.ID] = true
         }
       }
     }
